@@ -1,6 +1,7 @@
 ﻿using SamsungTestTask.DataAccess.Migrations;
 using SamsungTestTask.Infrastructure;
 using FluentMigrator.Runner;
+using SamsungTestTask.Infrastructure.Extensions;
 using SamsungTestTask.Service;
 using SimpleInjector;
 
@@ -27,6 +28,7 @@ public class Startup
             options.SchemaGeneratorOptions.SchemaIdSelector = t => t.ToFriendlyName();
         });
         services.AddControllers();
+        services.AddDataAccess();
         services.AddMediatR(x => x.RegisterServicesFromAssembly(type.Assembly));
         services.AddScoped<RecordService>();
     }

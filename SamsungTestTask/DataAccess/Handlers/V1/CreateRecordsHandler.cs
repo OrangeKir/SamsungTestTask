@@ -8,7 +8,7 @@ namespace SamsungTestTask.DataAccess.Handlers.V1;
 public class CreateRecordsHandler : IRequestHandler<Request>
 {
     private const string Query = @$"
-        INSERT INTO {PgTables.Record} (customer_id, posting_date, ammount) VALUES (@CustomerId, @PostingDate, @Ammount)";
+        INSERT INTO {PgTables.Record} (customer_id, posting_date, amount) VALUES (@CustomerId, @PostingDate, @Amount)";
 
     private readonly IDbContext _dbContext;
 

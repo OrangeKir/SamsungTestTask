@@ -28,7 +28,7 @@ public class GetRecordsCreationAttributesHandler : IRequestHandler<Request, Resp
         await using var dbConnection = _dbContext.GetConnection();
         await dbConnection.OpenAsync(cancellationToken);
 
-        var attributes = await dbConnection.QueryAsync<GetRecordsCreationAttributes.Attribute>(Query, request.AsParameters);
-        return new Response(attributes.ToArray());
+        var attributes = await dbConnection.QueryAsync<AttributeDto>(Query, request.AsParameters);
+        return new Response(attributes.ToDictionary(x=>(x.CustomerId, x.PostingDate), x=> x.TotalAmount));
     }
 }

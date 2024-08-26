@@ -40,22 +40,18 @@ public class RecordService
             validRecordsArray.Select(x => x.PostingDate).ToArray());
         
         var creationAttributes = await _mediator.Send(attributesRequest, cancellationToken);
-        
-        var (validAmountRecords, recordsWithManyAmount) = records
-            .Join(creationAttributes.Attributes,
-                r => new {r.CustomerId, r.PostingDate},
-                a => new {a.CustomerId, a.PostingDate},
-                (r, a) => new
-                {
-                    Record = r,
-                    TotalAmount = a.TotalAmount + r.Amount
-                })
-            .Fork(x => x.TotalAmount > MaxCustomerAmountPerDay);
+
+        (validRecords, var recordsWithManyAmount) = validRecordsArray
+            .Fork(x
+                => (creationAttributes.Attributes.TryGetValue((x.CustomerId, x.PostingDate), out var value)
+                    ? value
+                    : 0)
+                + x.Amount <= MaxCustomerAmountPerDay);
 
         foreach (var record in recordsWithManyAmount)
-            _logger.LogWarning(string.Format("Customer with Id {0} already has {1} total amount at date {2}, that more then day limit {3}",
-                record.Record.CustomerId, record.TotalAmount, record.Record.PostingDate, MaxCustomerAmountPerDay));
+            _logger.LogWarning(string.Format("Customer with Id {0} already has total amount at date {1}, that more then day limit {2}",
+                record.CustomerId, record.PostingDate, MaxCustomerAmountPerDay));
         
-        return validAmountRecords.Select(x => x.Record).ToArray();
+        return validRecords.ToArray();
     }
 }

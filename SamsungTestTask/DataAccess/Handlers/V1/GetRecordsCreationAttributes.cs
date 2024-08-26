@@ -12,8 +12,9 @@ public class GetRecordsCreationAttributes
             PostingDates
         };
     }
-    public record Response(IReadOnlyCollection<Attribute> Attributes);
-    public class Attribute
+    public record Response(IDictionary<(string, DateTime), decimal> Attributes);
+    
+    public class AttributeDto
     {
         public string CustomerId { get; set; }
         public DateTime PostingDate { get; set; }
